@@ -1,0 +1,39 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Realtime Boxes</title>
+</head>
+<body>
+    <h1>Realtime Boxes</h1>
+
+    <div id="box-container">
+        <!-- Box instances will be rendered here -->
+    </div>
+
+    <script>
+        const boxContainer = document.getElementById('box-container');
+        const websocketURL = 'ws://localhost:8000/ws/boxes/';
+        const socket = new WebSocket(websocketURL);
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const boxElement = document.getElementById(`box-${data.id}`);
+
+            if (boxElement) {
+                // If the box element already exists, update its attributes
+                boxElement.textContent = data.titulo;
+                boxElement.style.backgroundColor = data.color;
+            } else {
+                // Otherwise, create a new box element
+                const newBox = document.createElement('div');
+                newBox.id = `box-${data.id}`;
+                newBox.textContent = data.titulo;
+                newBox.style.backgroundColor = data.color;
+                boxContainer.appendChild(newBox);
+            }
+        };
+    </script>
+</body>
+</html>
